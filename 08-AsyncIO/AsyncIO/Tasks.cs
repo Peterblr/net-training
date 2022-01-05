@@ -20,13 +20,23 @@ namespace AsyncIO
         public static IEnumerable<string> GetUrlContent(this IEnumerable<Uri> uris)
         {
             // TODO : Implement GetUrlContent
-            using (var client = new WebClient())
+            using (var client = new GZipWebClient())
             {
                 var result = uris.Select(x => client.DownloadString(x));
 
                 return result;
             }
 
+        }
+
+        public class GZipWebClient : WebClient
+        {
+            protected override WebRequest GetWebRequest(Uri address)
+            {
+                HttpWebRequest request = (HttpWebRequest)base.GetWebRequest(address);
+                request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                return request;
+            }
         }
 
         /// <summary>
