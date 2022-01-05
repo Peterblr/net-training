@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,8 +11,6 @@ namespace AsyncIO
 {
     public static class Tasks
     {
-
-
         /// <summary>
         /// Returns the content of required uris.
         /// Method has to use the synchronous way and can be used to compare the performace of sync \ async approaches. 
@@ -21,10 +20,14 @@ namespace AsyncIO
         public static IEnumerable<string> GetUrlContent(this IEnumerable<Uri> uris)
         {
             // TODO : Implement GetUrlContent
-            throw new NotImplementedException();
+            using (var client = new WebClient())
+            {
+                var result = uris.Select(x => client.DownloadString(x));
+
+                return result;
+            }
+
         }
-
-
 
         /// <summary>
         /// Returns the content of required uris.
@@ -52,8 +55,25 @@ namespace AsyncIO
         /// <returns>MD5 hash</returns>
         public static Task<string> GetMD5Async(this Uri resource)
         {
-            // TODO : Implement GetMD5Async
+            //TODO: Implement GetMD5Async
+
+            if (resource is null)
+            {
+                throw new ArgumentException("Exception!");
+            }
+
             throw new NotImplementedException();
+
+            //var data = MD5.ComputeHash(resource);
+
+            //var sBuilder = new StringBuilder();
+
+            //for (int i = 0; i < data.Length; i++)
+            //{
+            //    sBuilder.Append(data[i].ToString("x2").ToUpper());
+            //}
+
+            //return sBuilder.ToString();
         }
     }
 }
