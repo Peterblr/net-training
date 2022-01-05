@@ -63,7 +63,7 @@ namespace AsyncIO
         /// </summary>
         /// <param name="resource">Uri of resource</param>
         /// <returns>MD5 hash</returns>
-        public static Task<string> GetMD5Async(this Uri resource)
+        public static async Task<string> GetMD5Async(this Uri resource)
         {
             //TODO: Implement GetMD5Async
 
@@ -72,18 +72,16 @@ namespace AsyncIO
                 throw new ArgumentException("Exception!");
             }
 
-            throw new NotImplementedException();
+            using (var algorithm = MD5.Create())
+            {
+                var client = new WebClient();
 
-            //var data = MD5.ComputeHash(resource);
+                var data = await client.DownloadDataTaskAsync(resource);
 
-            //var sBuilder = new StringBuilder();
+                var result = string.Join("", algorithm.ComputeHash(data).Select(x => x.ToString("x2")));
 
-            //for (int i = 0; i < data.Length; i++)
-            //{
-            //    sBuilder.Append(data[i].ToString("x2").ToUpper());
-            //}
-
-            //return sBuilder.ToString();
+                return result;
+            }
         }
     }
 }
