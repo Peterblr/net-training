@@ -51,7 +51,26 @@ namespace AsyncIO
         public static IEnumerable<string> GetUrlContentAsync(this IEnumerable<Uri> uris, int maxConcurrentStreams)
         {
             // TODO : Implement GetUrlContentAsync
-            throw new NotImplementedException();
+            List<Task<string>> list = new List<Task<string>>();
+
+            foreach (var item in uris)
+            {
+                if (list.Count(t => !t.IsCompleted) >= maxConcurrentStreams)
+                {
+                    Task.WaitAny(list.Where(t => !t.IsCompleted).ToArray());
+                }
+
+                var client = new GZipWebClient();
+                var task = client.DownloadStringTaskAsync(item);
+                list.Add(task);
+
+            }
+
+            Task.WaitAll(list.ToArray());
+
+            var result = list.Select(t => t.Result);
+
+            return result;
         }
 
 
